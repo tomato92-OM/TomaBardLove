@@ -694,10 +694,9 @@
             // 배너 소스 코드 복사 기능
             const copyButton = document.getElementById('copy-button');
             const sourceCodeTextarea = document.getElementById('source-code');
-            const githubId = '[내 GitHub 아이디]';
-            const bannerImageUrl = 'tomabard_banner.png';
-
-            const sourceCode = `<a href="https://${githubId}.github.io/tomabard-alliance" target="_blank"><img src="https://${githubId}.github.io/tomabard-alliance/${bannerImageUrl}" alt="Toma x Bardock Alliance" border="0"></a>`;
+            
+            // GitHub에서 직접 이미지를 가져오도록 설정
+            const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
             sourceCodeTextarea.value = sourceCode;
 
             copyButton.addEventListener('click', () => {
