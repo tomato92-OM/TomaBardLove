@@ -20,10 +20,10 @@
         }
 
         body {
-            background-color: var(--background-color);
-            background-image: url('https://raw.githubusercontent.com/tomato92-OM/T/refs/heads/main/images/Clear-night.jpg');
-            background-size: cover;
-            background-position: center;
+            background: radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(30, 144, 255, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(220, 20, 60, 0.2) 0%, transparent 50%),
+                        linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
             background-attachment: fixed;
             color: var(--primary-color);
             font-family: 'Poppins', 'Noto Sans KR', sans-serif;
@@ -35,6 +35,32 @@
             padding: 20px;
             box-sizing: border-box;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 우주 별 효과 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.8) 1px, transparent 1px),
+                radial-gradient(circle at 75% 15%, rgba(255,182,193,0.6) 1px, transparent 1px),
+                radial-gradient(circle at 15% 75%, rgba(173,216,230,0.7) 1px, transparent 1px),
+                radial-gradient(circle at 85% 85%, rgba(255,255,255,0.5) 1px, transparent 1px),
+                radial-gradient(circle at 45% 60%, rgba(221,160,221,0.6) 1px, transparent 1px);
+            background-size: 200px 200px, 300px 300px, 250px 250px, 180px 180px, 220px 220px;
+            pointer-events: none;
+            z-index: 0;
+            animation: twinkleStars 4s ease-in-out infinite;
+        }
+
+        @keyframes twinkleStars {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
         /* 스카우터 스캔라인 효과 (약하게) */
