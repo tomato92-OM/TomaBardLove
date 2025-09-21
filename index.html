@@ -3,64 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>드래곤볼 토마버독(TORABARD) LOVE 동맹</title>
+    <title>TOMA x BARDOCK Alliance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        /* 옛날 홈페이지 느낌을 내기 위한 간단한 스타일 */
+        :root {
+            --primary-color: #e0e0e0;
+            --secondary-color: #a0a0a0;
+            --accent-color: #00ff41;
+            --accent-blue: #4db8ff;
+            --background-color: #121212;
+            --surface-color: rgba(30, 30, 30, 0.8);
+            --scouter-glow: rgba(0, 255, 65, 0.3);
+        }
+
         body {
-            background-color: #000033; /* 짙은 남색 배경 */
-            color: #FFFFFF; /* 흰색 글씨 */
-            font-family: 'Gulim', '굴림', sans-serif; /* 굴림체 폰트 */
-            width: 800px;
-            margin: 20px auto; /* 가운데 정렬 */
+            background-color: var(--background-color);
+            background-image: url('https://raw.githubusercontent.com/tomato92-OM/T/refs/heads/main/images/Clear-night.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--primary-color);
+            font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
-            border: 2px solid #FFFFFF;
+            box-sizing: border-box;
+            position: relative;
         }
-        h1, h2 {
-            text-align: center;
-            color: #FFD700; /* 금색 제목 */
-        }
-        a {
-            color: #00FFFF; /* 밝은 청록색 링크 */
-        }
-        .banner-section, .member-section {
-            margin-top: 30px;
-            padding: 15px;
-            border: 1px dotted #CCCCCC;
-        }
-        textarea {
+
+        /* 스카우터 스캔라인 효과 (약하게) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background-color: #000000;
-            color: #00FF00;
-            border: 1px solid #00FF00;
+            height: 100%;
+            background: linear-gradient(
+                transparent 98%,
+                rgba(0, 255, 65, 0.02) 98%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1;
+            animation: scanline 0.2s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--surface-color);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            box-sizing: border-box;
+            animation: fadeIn 1.5s ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 헤더 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--primary-color);
+        }
+
+        /* 스카우터 디스플레이 스타일 시계 + 방문자 */
+        .scouter-display {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .display-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--accent-color);
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 0 0 10px var(--scouter-glow);
+            min-width: 160px;
+        }
+
+        .clock-panel .date {
+            font-size: 0.8em;
+            color: var(--secondary-color);
+            margin-bottom: 2px;
+        }
+
+        .clock-panel .time {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .visitor-panel {
+            text-align: center;
+        }
+
+        .visitor-panel .label {
+            font-size: 0.7em;
+            color: var(--secondary-color);
+            margin-bottom: 2px;
+        }
+
+        .visitor-panel .count {
+            font-size: 1em;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-shadow: 0 0 8px var(--accent-color);
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 95% { opacity: 1; }
+            96%, 100% { opacity: 0.7; }
+        }
+
+        /* 메인 콘텐츠 */
+        .content p {
+            font-size: 1em;
+            line-height: 1.7;
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        /* 배너 섹션 */
+        .banner-container {
+            position: relative;
+            width: 200px;
+            height: 40px;
+            margin: 0 auto 30px auto;
+            cursor: pointer;
+        }
+
+        .banner-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://github.com/tomato92-OM/TomaBardLove/blob/main/tomabard01.png?raw=true');
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--accent-blue);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(77, 184, 255, 0.3);
+        }
+
+        .banner-container:hover .banner-image {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(77, 184, 255, 0.6);
+            border-color: #77caff;
+        }
+
+        /* 개선된 툴팁 */
+        .banner-tooltip {
+            position: absolute;
+            bottom: calc(100% + 15px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .banner-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.95);
+        }
+        
+        .banner-container:hover .banner-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 25px);
+            pointer-events: auto;
+        }
+
+        .banner-tooltip p {
+            font-size: 0.9em !important;
+            margin: 0 0 15px 0 !important;
+            color: var(--secondary-color) !important;
+            text-align: center !important;
+            font-style: normal !important;
+        }
+
+        #source-code {
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--primary-color);
+            border-radius: 4px;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: none;
+            margin-bottom: 10px;
+            height: 60px;
+        }
+        
+        #copy-button {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 4px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        #copy-button:hover {
+            background: #77caff;
+            transform: translateY(-1px);
+        }
+
+        #copy-button.copied {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        /* 도트 캐릭터 GIF */
+        .walking-chars {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .dot-gif {
+            width: auto;
+            height: 60px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 65, 0.3));
+        }
+        .power-meter {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 0 15px var(--scouter-glow);
+        }
+
+        .power-title {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .power-bar {
+            background: #333;
+            border-radius: 5px;
+            height: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .power-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--accent-color), #66ff99, #ffff00, #ff6600);
+            animation: powerUp 3s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        @keyframes powerUp {
+            0%, 100% { width: 85%; }
+            50% { width: 95%; }
+        }
+
+        .power-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.8em;
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* 멤버 섹션 */
+        .members-section {
+            margin-top: 40px;
+        }
+
+        .members-section h2 {
+            text-align: center;
+            color: var(--secondary-color);
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .members-list {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .members-list li a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 5px 0;
+        }
+
+        .members-list li a:hover {
+            color: var(--accent-blue);
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .scouter-display {
+                align-items: center;
+            }
+            
+            .display-panel {
+                min-width: 140px;
+            }
+            
+            header h1 {
+                font-size: 1.5em;
+            }
+            
+            .banner-tooltip {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .banner-tooltip {
+                width: 250px;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                transform: none;
+            }
+            
+            .banner-tooltip::after {
+                left: 50%;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="main-container">
+        <header>
+            <h1>TOMA x BARDOCK</h1>
+            <div class="scouter-display">
+                <div class="display-panel clock-panel">
+                    <div class="date" id="date-display"></div>
+                    <div class="time" id="time-display"></div>
+                </div>
+                <div class="display-panel visitor-panel">
+                    <div class="label">VISITORS</div>
+                    <div class="count" id="visitor-count">000001</div>
+                </div>
+            </div>
+        </header>
 
-    <h1>드래곤볼 토마(TORA) LOVE 동맹</h1>
+        <main class="content">
+            <p>A bond forged in battle. An alliance beyond fate.</p>
 
-    <div style="text-align:center;">
-        <img src="https://i.imgur.com/your-tora-image.png" alt="토마 이미지" width="300">
-        <p>버독 팀의 듬직한 동료, 토마를 사랑하는 사람들의 공간입니다.</p>
+            <div class="banner-container">
+                <div class="banner-image">
+                </div>
+                
+                <div class="banner-tooltip">
+                    <p>Copy the code to join us.</p>
+                    <textarea id="source-code" rows="3" readonly></textarea>
+                    <button id="copy-button">Copy Source</button>
+                </div>
+            </div>
+
+            <!-- 도트 캐릭터 GIF -->
+            <div class="walking-chars">
+                <img src="https://github.com/tomato92-OM/TomaBardLove/blob/main/KakaoTalk_20250921_135913182.gif?raw=true" alt="Walking Characters" class="dot-gif">
+            </div>
+
+            <div class="power-meter">
+                <div class="power-title">COUPLE POWER LEVEL</div>
+                <div class="power-bar">
+                    <div class="power-fill"></div>
+                    <div class="power-text">OVER 9000!</div>
+                </div>
+            </div>
+
+            <section class="members-section">
+                <h2>MEMBERS</h2>
+                <ul class="members-list">
+                    <li><a href="#" target="_blank">SITE NAME (OWNER)</a></li>
+                    <!-- 동맹원이 생기면 여기에 추가합니다 -->
+                </ul>
+            </section>
+        </main>
     </div>
 
-    <div class="banner-section">
-        <h2>동맹 배너</h2>
-        <p>저희 동맹과 함께하고 싶으신 분은 아래 배너를 달아주세요!</p>
-        <img src="tora_banner.gif" alt="토마 동맹 배너">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 실시간 시계 기능
+            const dateDisplay = document.getElementById('date-display');
+            const timeDisplay = document.getElementById('time-display');
+            let timeOffset = 0;
 
-        <h3>배너 소스 코드</h3>
-        <p>아래 코드를 복사해서 당신의 홈페이지에 붙여넣어 주세요.</p>
-        <textarea rows="4" readonly><a href="https://[내 GitHub 아이디].github.io"><img src="https://[내 GitHub 아이디].github.io/tora_banner.gif" alt="토마 LOVE 동맹"></a></textarea>
-    </div>
+            async function syncTime() {
+                try {
+                    // 여러 시간 API를 시도해서 안정성 향상
+                    let response;
+                    try {
+                        response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
+                    } catch (e) {
+                        // 첫 번째 API 실패시 두 번째 API 시도
+                        response = await fetch('https://api.ipgeolocation.io/timezone?apiKey=free&tz=Asia/Seoul');
+                    }
+                    
+                    if (!response.ok) throw new Error('Network response was not ok.');
+                    const data = await response.json();
+                    
+                    // API 응답 형식에 따라 처리
+                    let serverTime;
+                    if (data.datetime) {
+                        serverTime = new Date(data.datetime).getTime();
+                    } else if (data.date_time) {
+                        serverTime = new Date(data.date_time).getTime();
+                    } else {
+                        throw new Error('Invalid API response format');
+                    }
+                    
+                    const localTime = new Date().getTime();
+                    timeOffset = serverTime - localTime;
+                } catch (error) {
+                    // 온라인 시간 동기화 실패시 로컬 시간 사용 (에러 메시지 제거)
+                    timeOffset = 0;
+                }
+            }
 
-    <div class="member-section">
-        <h2>함께하는 동맹원 (Members)</h2>
-        <ul>
-            <li><a href="홈페이지 주소" target="_blank">홈페이지 이름 (운영자 닉네임)</a></li>
-            <li><a href="#" target="_blank">토마는 내 인생 (바독)</a></li>
-        </ul>
-    </div>
+            function updateClock() {
+                const now = new Date(new Date().getTime() + timeOffset);
+                const dateOptions = { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
+                const timeOptions = { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
 
+                dateDisplay.textContent = new Intl.DateTimeFormat('ko-KR', dateOptions).format(now);
+                timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+            }
+
+            syncTime().then(() => {
+                updateClock();
+                setInterval(updateClock, 1000);
+            });
+            setInterval(syncTime, 600000);
+
+            // 방문자 카운터
+            function animateVisitorCounter() {
+                const counter = document.getElementById('visitor-count');
+                let count = parseInt(localStorage.getItem('tomabard-visitors') || '0') + 1;
+                localStorage.setItem('tomabard-visitors', count.toString());
+                
+                let current = 0;
+                const increment = Math.ceil(count / 30);
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= count) {
+                        current = count;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = current.toString().padStart(6, '0');
+                }, 50);
+            }
+
+            // 배너 소스 코드 복사 기능
+            const copyButton = document.getElementById('copy-button');
+            const sourceCodeTextarea = document.getElementById('source-code');
+            const githubId = '[내 GitHub 아이디]';
+            const bannerImageUrl = 'tomabard_banner.png';
+
+            const sourceCode = `<a href="https://${githubId}.github.io/tomabard-alliance" target="_blank"><img src="https://${githubId}.github.io/tomabard-alliance/${bannerImageUrl}" alt="Toma x Bardock Alliance" border="0"></a>`;
+            sourceCodeTextarea.value = sourceCode;
+
+            copyButton.addEventListener('click', () => {
+                navigator.clipboard.writeText(sourceCode).then(() => {
+                    copyButton.textContent = 'Copied!';
+                    copyButton.classList.add('copied');
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy Source';
+                        copyButton.classList.remove('copied');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('클립보드 복사 실패:', err);
+                    sourceCodeTextarea.select();
+                    sourceCodeTextarea.setSelectionRange(0, 99999);
+                    try {
+                        document.execCommand('copy');
+                        copyButton.textContent = 'Copied!';
+                        copyButton.classList.add('copied');
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy Source';
+                            copyButton.classList.remove('copied');
+                        }, 2000);
+                    } catch (execErr) {
+                        alert('복사에 실패했습니다. 직접 복사해주세요.');
+                    }
+                });
+            });
+
+            // 초기화
+            animateVisitorCounter();
+        });
+    </script>
 </body>
 </html>
