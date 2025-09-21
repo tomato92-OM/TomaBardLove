@@ -182,14 +182,41 @@
         }
 
         /* 메인 콘텐츠 */
-        .content p {
-            font-size: 1em;
-            line-height: 1.7;
-            color: var(--secondary-color);
-            text-align: center;
-            margin-bottom: 40px;
-            font-style: italic;
-        }
+.content p {
+    font-size: 1.4em;
+    line-height: 1.8;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 40px;
+    font-style: normal;
+    font-weight: 300;
+    letter-spacing: 3px;
+    background: linear-gradient(45deg, #4db8ff, var(--primary-color), #ff6b6b);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gentleGlow 4s ease-in-out infinite, colorShift 6s ease-in-out infinite;
+    font-family: 'Noto Sans KR', sans-serif;
+    filter: drop-shadow(0 0 8px rgba(77, 184, 255, 0.3));
+}
+
+@keyframes gentleGlow {
+    0%, 100% { 
+        filter: drop-shadow(0 0 8px rgba(77, 184, 255, 0.3));
+        opacity: 0.9;
+    }
+    50% { 
+        filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.4));
+        opacity: 1;
+    }
+}
+
+@keyframes colorShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
         /* 배너 섹션 */
         .banner-container {
@@ -578,7 +605,7 @@
         </header>
 
         <main class="content">
-            <p>A bond forged in battle. An alliance beyond fate.</p>
+            <p>ふたりだけの最終決戦</p>
 
             <div class="banner-container">
                 <div class="banner-image">
@@ -604,22 +631,97 @@
                 </div>
             </div>
 
-            <section class="members-section">
-                <h2>MEMBERS</h2>
-                <ul class="members-list">
-                    <li><a href="#" target="_blank">SITE NAME (OWNER)</a></li>
-                    <!-- 동맹원이 생기면 여기에 추가합니다 -->
-                </ul>
-            </section>
+   <section class="members-section">
+       <ul class="members-list">
+       <h2>Site Master</h2>
+           <li><a href="https://x.com/yumeyasai12" target="_blank">@yumeyasai12</a></li>
+           <li><a href="https://x.com/mikuro_maru" target="_blank">@mikuro_maru</a></li>
+       </ul>
+   </section>
         </main>
     </div>
 
     <!-- YouTube 플레이어 (숨겨짐) -->
-    <div id="youtube-container" class="youtube-container"></div>
+    <div id="youtube-player"></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    let player;
+    let isPlayerReady = false;
+
+    // YouTube API 준비
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('youtube-player', {
+            height: '1',
+            width: '1',
+            videoId: 'Lm77VCkf_do', // 여기에 원하는 YouTube 비디오 ID 입력
+            playerVars: {
+                'autoplay': 1,
+                'loop': 1,
+                'playlist': 'Lm77VCkf_do',
+                'controls': 0,
+                'disablekb': 1,
+                'enablejsapi': 1,
+                'fs': 0,
+                'iv_load_policy': 3,
+                'modestbranding': 1,
+                'playsinline': 1,
+                'rel': 0,
+                'showinfo': 0
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        isPlayerReady = true;
+        player.setVolume(30);
+        document.getElementById('play-btn').disabled = false;
+    }
+
+    function onPlayerStateChange(event) {
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        
+        if (event.data == YT.PlayerState.PLAYING) {
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+        } else {
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 음악 컨트롤 추가
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeDisplay = document.getElementById('volume-display');
+
+        playBtn.addEventListener('click', () => {
+            if (isPlayerReady) {
+                player.playVideo();
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            if (isPlayerReady) {
+                player.pauseVideo();
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value;
+            volumeDisplay.textContent = volume;
+            if (isPlayerReady) {
+                player.setVolume(volume);
+            }
+        });
+
             // 실시간 시계 기능
             const dateDisplay = document.getElementById('date-display');
             const timeDisplay = document.getElementById('time-display');
