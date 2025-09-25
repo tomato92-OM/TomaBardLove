@@ -763,6 +763,73 @@
                 padding: 15px;
             }
         }
+/* Web拍手 버튼 스타일 */
+.web-clap-section {
+    text-align: center;
+    margin: 40px 0;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+.web-clap-title {
+    color: var(--accent-blue);
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    text-shadow: 0 0 8px var(--accent-blue);
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.web-clap-button {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #66ff99 100%);
+    color: #000;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.web-clap-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 255, 65, 0.5);
+    background: linear-gradient(135deg, #66ff99 0%, var(--accent-color) 100%);
+}
+
+.web-clap-button::before {
+    content: '👏';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    animation: clap 2s ease-in-out infinite;
+}
+
+@keyframes clap {
+    0%, 100% { transform: translateY(-50%) rotate(0deg); }
+    25% { transform: translateY(-50%) rotate(-10deg); }
+    75% { transform: translateY(-50%) rotate(10deg); }
+}
+
+.web-clap-button span {
+    margin-left: 25px;
+}
+
+.web-clap-count {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+    font-family: 'Orbitron', monospace;
+}
     </style>
 </head>
 <body>
@@ -859,6 +926,17 @@
                     <div class="power-text">OVER 9000!</div>
                 </div>
             </div>
+
+<!-- Web拍手 섹션 -->
+<div class="web-clap-section">
+    <h3 class="web-clap-title">Web拍手</h3>
+    <a href="thanks.html" class="web-clap-button">
+        <span>応援する！</span>
+    </a>
+    <div class="web-clap-count">
+        Total Claps: <span id="clap-count">0</span>
+    </div>
+</div>
 
             <!-- 사이트 정보 -->
             <div class="site-info">
@@ -1040,6 +1118,23 @@
                 counter.textContent = current.toString().padStart(6, '0');
             }, 50);
         }
+
+// Web拍手 카운터
+const clapCount = document.getElementById('clap-count');
+if (clapCount) {
+    let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+    clapCount.textContent = totalClaps.toString().padStart(5, '0');
+}
+
+// Web拍手 버튼 클릭 이벤트
+const webClapButton = document.querySelector('.web-clap-button');
+if (webClapButton) {
+    webClapButton.addEventListener('click', (e) => {
+        let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+        totalClaps++;
+        localStorage.setItem('tomabard-claps', totalClaps.toString());
+    });
+}
 
         // 텍스트 링크 복사 기능 추가
         const textCopyButton = document.getElementById('text-copy-button');
