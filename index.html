@@ -63,7 +63,7 @@
             50% { opacity: 1; }
         }
 
-        /* 스카우터 스캔라인 효과 (약하게) */
+        /* 스카우터 스캔라인 효과 */
         body::before {
             content: '';
             position: fixed;
@@ -88,7 +88,7 @@
 
         .main-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             background: var(--surface-color);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -182,48 +182,120 @@
         }
 
         /* 메인 콘텐츠 */
-.content p {
-    font-size: 1.4em;
-    line-height: 1.8;
-    color: var(--primary-color);
-    text-align: center;
-    margin-bottom: 40px;
-    font-style: normal;
-    font-weight: 300;
-    letter-spacing: 3px;
-    background: linear-gradient(45deg, #4db8ff, var(--primary-color), #ff6b6b);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gentleGlow 4s ease-in-out infinite, colorShift 6s ease-in-out infinite;
-    font-family: 'Noto Sans KR', sans-serif;
-    filter: drop-shadow(0 0 8px rgba(77, 184, 255, 0.3));
-}
+        .content p.main-title {
+            font-size: 1.4em;
+            line-height: 1.8;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-style: normal;
+            font-weight: 300;
+            letter-spacing: 3px;
+            background: linear-gradient(45deg, #4db8ff, var(--primary-color), #ff6b6b);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gentleGlow 4s ease-in-out infinite, colorShift 6s ease-in-out infinite;
+            font-family: 'Noto Sans KR', sans-serif;
+            filter: drop-shadow(0 0 8px rgba(77, 184, 255, 0.3));
+        }
 
-@keyframes gentleGlow {
-    0%, 100% { 
-        filter: drop-shadow(0 0 8px rgba(77, 184, 255, 0.3));
-        opacity: 0.9;
-    }
-    50% { 
-        filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.4));
-        opacity: 1;
-    }
-}
+        @keyframes gentleGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 8px rgba(77, 184, 255, 0.3));
+                opacity: 0.9;
+            }
+            50% { 
+                filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.4));
+                opacity: 1;
+            }
+        }
 
-@keyframes colorShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+        @keyframes colorShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 사이트 설명 섹션 */
+        .description-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .description-section h2 {
+            color: var(--accent-blue);
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        .description-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 0.95em;
+        }
+
+        .conditions-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .conditions-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            font-size: 0.9em;
+        }
+
+        .conditions-list li:last-child {
+            border-bottom: none;
+        }
+
+        .participation-note {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
 
         /* 배너 섹션 */
+        .banner-section {
+            margin: 40px 0;
+        }
+
+        .banner-section h3 {
+            color: var(--accent-blue);
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        .banner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
         .banner-container {
             position: relative;
             width: 200px;
             height: 40px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto;
             cursor: pointer;
         }
 
@@ -247,6 +319,18 @@
             transform: scale(1.05);
             box-shadow: 0 0 25px rgba(77, 184, 255, 0.6);
             border-color: #77caff;
+        }
+
+        /* 빈 배너 슬롯 */
+        .empty-banner {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-color);
+            font-size: 0.8em;
+            text-align: center;
         }
 
         /* 개선된 툴팁 */
@@ -345,6 +429,7 @@
             opacity: 0.8;
             filter: drop-shadow(0 0 8px rgba(0, 255, 65, 0.3));
         }
+
         .power-meter {
             background: rgba(0, 0, 0, 0.6);
             border: 2px solid var(--accent-color);
@@ -396,38 +481,73 @@
             font-family: 'Orbitron', monospace;
         }
 
-        /* 멤버 섹션 */
-        .members-section {
-            margin-top: 40px;
+        /* 사이트 정보 섹션 */
+        .site-info {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            font-size: 0.9em;
         }
 
-        .members-section h2 {
-            text-align: center;
-            color: var(--secondary-color);
-            font-weight: 400;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            font-size: 1.2em;
+        .site-info h3 {
+            color: var(--accent-color);
+            font-size: 1em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px var(--accent-color);
         }
 
-        .members-list {
-            list-style: none;
-            padding: 0;
-            text-align: center;
-        }
-
-        .members-list li a {
+        .site-info p {
+            margin: 5px 0;
             color: var(--primary-color);
+        }
+
+        .site-info a {
+            color: var(--accent-blue);
             text-decoration: none;
             transition: all 0.3s ease;
-            display: inline-block;
-            padding: 5px 0;
         }
 
-        .members-list li a:hover {
-            color: var(--accent-blue);
+        .site-info a:hover {
+            color: #77caff;
+            text-shadow: 0 0 5px #77caff;
+        }
+
+        /* 컴팩트한 Site Master */
+        .site-master {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 0.7em;
+            z-index: 100;
+        }
+
+        .site-master h4 {
+            color: var(--secondary-color);
+            font-size: 0.9em;
+            margin: 0 0 8px 0;
+            font-weight: 400;
             letter-spacing: 1px;
-            text-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        .site-master a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            display: block;
+            margin: 3px 0;
+            transition: all 0.2s ease;
+            font-size: 0.85em;
+        }
+
+        .site-master a:hover {
+            color: #77caff;
+            text-shadow: 0 0 5px #77caff;
+            transform: translateX(3px);
         }
 
         /* 음악 컨트롤 패널 */
@@ -520,9 +640,11 @@
             pointer-events: none;
             z-index: -1;
         }
+
         @media (max-width: 768px) {
             .main-container {
                 padding: 20px;
+                max-width: 95%;
             }
             
             header {
@@ -547,6 +669,11 @@
                 width: 280px;
             }
 
+            .banner-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
             .music-controls {
                 position: relative;
                 top: auto;
@@ -555,6 +682,13 @@
                 width: fit-content;
                 flex-wrap: wrap;
                 justify-content: center;
+            }
+
+            .site-master {
+                position: static;
+                margin: 20px auto 0 auto;
+                text-align: center;
+                width: fit-content;
             }
         }
 
@@ -574,6 +708,10 @@
             .music-controls {
                 flex-direction: column;
                 gap: 5px;
+            }
+
+            .description-section {
+                padding: 15px;
             }
         }
     </style>
@@ -605,16 +743,57 @@
         </header>
 
         <main class="content">
-            <p>ふたりだけの最終決戦</p>
+            <p class="main-title">ふたりだけの最終決戦</p>
 
-            <div class="banner-container">
-                <div class="banner-image">
+            <!-- 사이트 설명 섹션 -->
+            <div class="description-section">
+                <h2>概要</h2>
+                <p>このサイトはドラゴンボールのキャラクター、TomaとBardockのカップリング組み合わせを愛する人たちを歓迎する空間です。TomaとBardock（以下TomaBard）関連組み合わせであれば誰でも自由に！</p>
+                
+                <ul class="conditions-list">
+                    <li>🍅🩸 Dragon Ball Z: Bardock - The Father of Goku (たったひとりの最終決戦)を愛している。</li>
+                    <li>🍅🩸 TomaとBardockを愛している。</li>
+                    <li>🍅🩸 実は二人が公式的に愛し合っていると思っている。</li>
+                    <li>🍅🩸 トマトとゴボウは美味しいと思っている。</li>
+                    <li>🍅🩸 毎年10月17日ごとに二人の結婚記念を数えている。</li>
+                </ul>
+                
+                <div class="participation-note">
+                    ✅ 以上の中で、1つでも当てはまったら誰でも歓迎します。
                 </div>
                 
-                <div class="banner-tooltip">
-                    <p>Copy the code to join us.</p>
-                    <textarea id="source-code" rows="3" readonly></textarea>
-                    <button id="copy-button">Copy Source</button>
+                <h3>参加方法</h3>
+                <p>同盟、ブログ、ホームページ、または自分だけのSNSを持っている人であれば、このリンクのバナーを貼ってみましょう。</p>
+            </div>
+
+            <!-- 배너 섹션 -->
+            <div class="banner-section">
+                <h3>バナー</h3>
+                <div class="banner-grid">
+                    <div class="banner-container">
+                        <div class="banner-image"></div>
+                        <div class="banner-tooltip">
+                            <p>Copy the code to join us.</p>
+                            <textarea id="source-code" rows="3" readonly></textarea>
+                            <button id="copy-button">Copy Source</button>
+                        </div>
+                    </div>
+                    
+                    <div class="banner-container">
+                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+                    </div>
+                    
+                    <div class="banner-container">
+                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+                    </div>
+                    
+                    <div class="banner-container">
+                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+                    </div>
+                    
+                    <div class="banner-container">
+                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+                    </div>
                 </div>
             </div>
 
@@ -631,14 +810,28 @@
                 </div>
             </div>
 
-   <section class="members-section">
-       <ul class="members-list">
-       <h2>Site Master</h2>
-           <li><a href="https://x.com/yumeyasai12" target="_blank">@yumeyasai12</a></li>
-           <li><a href="https://x.com/mikuro_maru" target="_blank">@mikuro_maru</a></li>
-       </ul>
-   </section>
+            <!-- 사이트 정보 -->
+            <div class="site-info">
+                <h3>サイト情報</h3>
+                <p><strong>URL:</strong> <a href="https://tomato92-om.github.io/TomaBardLove" target="_blank">https://tomato92-om.github.io/TomaBardLove</a></p>
+                <p><strong>サイト名:</strong> TOMA x BARDOCK Alliance</p>
+                <p><strong>更新:</strong> <span id="last-update">2024.10.17</span></p>
+                
+                <h3>バナーリンクタグ</h3>
+                <p>コピーペーストしてお使い下さい。</p>
+                
+                <h3>リンク</h3>
+                <p><a href="https://x.com/yumeyasai12" target="_blank">管理人Twitter @yumeyasai12</a></p>
+                <p><a href="https://x.com/mikuro_maru" target="_blank">管理人Twitter @mikuro_maru</a></p>
+            </div>
         </main>
+        
+        <!-- 컴팩트한 Site Master -->
+        <div class="site-master">
+            <h4>Site Master</h4>
+            <a href="https://x.com/yumeyasai12" target="_blank">@yumeyasai12</a>
+            <a href="https://x.com/mikuro_maru" target="_blank">@mikuro_maru</a>
+        </div>
     </div>
 
     <!-- YouTube 플레이어 (숨겨짐) -->
@@ -722,114 +915,120 @@
             }
         });
 
-            // 실시간 시계 기능
-            const dateDisplay = document.getElementById('date-display');
-            const timeDisplay = document.getElementById('time-display');
-            let timeOffset = 0;
+        // 실시간 시계 기능
+        const dateDisplay = document.getElementById('date-display');
+        const timeDisplay = document.getElementById('time-display');
+        let timeOffset = 0;
 
-            async function syncTime() {
+        async function syncTime() {
+            try {
+                // 여러 시간 API를 시도해서 안정성 향상
+                let response;
                 try {
-                    // 여러 시간 API를 시도해서 안정성 향상
-                    let response;
-                    try {
-                        response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
-                    } catch (e) {
-                        // 첫 번째 API 실패시 두 번째 API 시도
-                        response = await fetch('https://api.ipgeolocation.io/timezone?apiKey=free&tz=Asia/Seoul');
-                    }
-                    
-                    if (!response.ok) throw new Error('Network response was not ok.');
-                    const data = await response.json();
-                    
-                    // API 응답 형식에 따라 처리
-                    let serverTime;
-                    if (data.datetime) {
-                        serverTime = new Date(data.datetime).getTime();
-                    } else if (data.date_time) {
-                        serverTime = new Date(data.date_time).getTime();
-                    } else {
-                        throw new Error('Invalid API response format');
-                    }
-                    
-                    const localTime = new Date().getTime();
-                    timeOffset = serverTime - localTime;
-                } catch (error) {
-                    // 온라인 시간 동기화 실패시 로컬 시간 사용 (에러 메시지 제거)
-                    timeOffset = 0;
+                    response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
+                } catch (e) {
+                    // 첫 번째 API 실패시 두 번째 API 시도
+                    response = await fetch('https://api.ipgeolocation.io/timezone?apiKey=free&tz=Asia/Seoul');
                 }
-            }
-
-            function updateClock() {
-                const now = new Date(new Date().getTime() + timeOffset);
-                const dateOptions = { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
-                const timeOptions = { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-
-                dateDisplay.textContent = new Intl.DateTimeFormat('ko-KR', dateOptions).format(now);
-                timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
-            }
-
-            syncTime().then(() => {
-                updateClock();
-                setInterval(updateClock, 1000);
-            });
-            setInterval(syncTime, 600000);
-
-            // 방문자 카운터
-            function animateVisitorCounter() {
-                const counter = document.getElementById('visitor-count');
-                let count = parseInt(localStorage.getItem('tomabard-visitors') || '0') + 1;
-                localStorage.setItem('tomabard-visitors', count.toString());
                 
-                let current = 0;
-                const increment = Math.ceil(count / 30);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const data = await response.json();
                 
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= count) {
-                        current = count;
-                        clearInterval(timer);
-                    }
-                    counter.textContent = current.toString().padStart(6, '0');
-                }, 50);
+                // API 응답 형식에 따라 처리
+                let serverTime;
+                if (data.datetime) {
+                    serverTime = new Date(data.datetime).getTime();
+                } else if (data.date_time) {
+                    serverTime = new Date(data.date_time).getTime();
+                } else {
+                    throw new Error('Invalid API response format');
+                }
+                
+                const localTime = new Date().getTime();
+                timeOffset = serverTime - localTime;
+            } catch (error) {
+                // 온라인 시간 동기화 실패시 로컬 시간 사용 (에러 메시지 제거)
+                timeOffset = 0;
             }
+        }
 
-            // 배너 소스 코드 복사 기능
-            const copyButton = document.getElementById('copy-button');
-            const sourceCodeTextarea = document.getElementById('source-code');
+        function updateClock() {
+            const now = new Date(new Date().getTime() + timeOffset);
+            const dateOptions = { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
+            const timeOptions = { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+            dateDisplay.textContent = new Intl.DateTimeFormat('ko-KR', dateOptions).format(now);
+            timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+        }
+
+        syncTime().then(() => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+        setInterval(syncTime, 600000);
+
+        // 방문자 카운터
+        function animateVisitorCounter() {
+            const counter = document.getElementById('visitor-count');
+            let count = parseInt(localStorage.getItem('tomabard-visitors') || '0') + 1;
+            localStorage.setItem('tomabard-visitors', count.toString());
             
-            // GitHub에서 직접 이미지를 가져오도록 설정
-            const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
-            sourceCodeTextarea.value = sourceCode;
+            let current = 0;
+            const increment = Math.ceil(count / 30);
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= count) {
+                    current = count;
+                    clearInterval(timer);
+                }
+                counter.textContent = current.toString().padStart(6, '0');
+            }, 50);
+        }
 
-            copyButton.addEventListener('click', () => {
-                navigator.clipboard.writeText(sourceCode).then(() => {
+        // 배너 소스 코드 복사 기능
+        const copyButton = document.getElementById('copy-button');
+        const sourceCodeTextarea = document.getElementById('source-code');
+        
+        // GitHub에서 직접 이미지를 가져오도록 설정
+        const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
+        sourceCodeTextarea.value = sourceCode;
+
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(sourceCode).then(() => {
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('copied');
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy Source';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('클립보드 복사 실패:', err);
+                sourceCodeTextarea.select();
+                sourceCodeTextarea.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
                     copyButton.textContent = 'Copied!';
                     copyButton.classList.add('copied');
                     setTimeout(() => {
                         copyButton.textContent = 'Copy Source';
                         copyButton.classList.remove('copied');
                     }, 2000);
-                }).catch(err => {
-                    console.error('클립보드 복사 실패:', err);
-                    sourceCodeTextarea.select();
-                    sourceCodeTextarea.setSelectionRange(0, 99999);
-                    try {
-                        document.execCommand('copy');
-                        copyButton.textContent = 'Copied!';
-                        copyButton.classList.add('copied');
-                        setTimeout(() => {
-                            copyButton.textContent = 'Copy Source';
-                            copyButton.classList.remove('copied');
-                        }, 2000);
-                    } catch (execErr) {
-                        alert('복사에 실패했습니다. 직접 복사해주세요.');
-                    }
-                });
+                } catch (execErr) {
+                    alert('복사에 실패했습니다. 직접 복사해주세요.');
+                }
             });
-
-            // 초기화
-            animateVisitorCounter();
         });
+
+        // 초기화
+        animateVisitorCounter();
+        
+        // 마지막 업데이트 날짜 설정
+        const lastUpdateElement = document.getElementById('last-update');
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+        lastUpdateElement.textContent = formattedDate;
+    });
     </script>
 </body>
 </html>
