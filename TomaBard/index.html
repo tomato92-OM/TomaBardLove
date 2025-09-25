@@ -11,7 +11,7 @@
     <style>
         :root {
             --primary-color: #e0e0e0;
-            --secondary-color: #a0a0a0;
+            --secondary-color: #a0a0e0;
             --accent-color: #00ff41;
             --accent-blue: #4db8ff;
             --background-color: #121212;
@@ -1035,82 +1035,57 @@
             }
         });
 
-// 실시간 시계 기능 (개선된 버전)
+        // --- START: CLOCK SCRIPT ---
         const dateDisplay = document.getElementById('date-display');
         const timeDisplay = document.getElementById('time-display');
-        let timeOffset = 0;
+        let timeOffset = 0; // 로컬 시간과 서버 시간의 차이 (ms)
 
+        // 온라인 시간 API를 통해 정확한 서울 시간을 가져오는 함수
         async function syncTime() {
             try {
-                // 더 안정적인 시간 API들을 순차적으로 시도
-                const timeAPIs = [
-                    'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Seoul',
-                    'https://worldtimeapi.org/api/timezone/Asia/Seoul',
-                    'https://api.ipgeolocation.io/timezone?apiKey=free&tz=Asia/Seoul'
-                ];
-                
-                let serverTime = null;
-                
-                for (const api of timeAPIs) {
-                    try {
-                        const response = await fetch(api, {
-                            timeout: 5000 // 5초 타임아웃
-                        });
-                        
-                        if (!response.ok) continue;
-                        
-                        const data = await response.json();
-                        
-                        // API별 응답 형식에 따른 처리
-                        if (data.dateTime) {
-                            // timeapi.io 형식
-                            serverTime = new Date(data.dateTime).getTime();
-                            break;
-                        } else if (data.datetime) {
-                            // worldtimeapi.org 형식
-                            serverTime = new Date(data.datetime).getTime();
-                            break;
-                        } else if (data.date_time) {
-                            // ipgeolocation.io 형식
-                            serverTime = new Date(data.date_time).getTime();
-                            break;
-                        }
-                    } catch (apiError) {
-                        console.warn(`Time API failed: ${api}`, apiError);
-                        continue;
-                    }
-                }
-                
-                if (serverTime) {
-                    const localTime = new Date().getTime();
-                    timeOffset = serverTime - localTime;
-                    console.log('시간 동기화 성공. 오프셋:', timeOffset + 'ms');
-                } else {
-                    throw new Error('All time APIs failed');
-                }
-                
+                // 1차 API 시도: worldtimeapi.org (안정성이 더 높을 수 있음)
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
+                if (!response.ok) throw new Error('Primary API (worldtimeapi.org) failed');
+                const data = await response.json();
+                // 일부 브라우저 호환성을 위해 마이크로초를 제외한 ISO 8601 형식 사용
+                const serverTime = new Date(data.datetime.substring(0, 26)).getTime();
+                const localTime = new Date().getTime();
+                timeOffset = serverTime - localTime;
+                console.log('Time synchronized successfully with worldtimeapi.org.');
             } catch (error) {
-                console.warn('온라인 시간 동기화 실패, 대한민국 표준시 추정값 사용:', error);
-                // 모든 API가 실패할 경우 UTC+9 시간대로 강제 조정
-                const now = new Date();
-                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-                const koreaTime = utc + (9 * 3600000); // UTC+9
-                timeOffset = koreaTime - now.getTime();
+                console.warn(error.message + '. Trying secondary API (timeapi.io)...');
+                try {
+                    // 2차 API 시도: timeapi.io
+                    const response2 = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Seoul');
+                    if (!response2.ok) throw new Error('Secondary API (timeapi.io) also failed');
+                    const data2 = await response2.json();
+                    const serverTime2 = new Date(data2.dateTime).getTime();
+                    const localTime2 = new Date().getTime();
+                    timeOffset = serverTime2 - localTime2;
+                    console.log('Time synchronized successfully with timeapi.io.');
+                } catch (error2) {
+                    console.warn(error2.message + '. Could not fetch online time. Falling back to local time with UTC+9 adjustment.');
+                    // API 호출 실패 시, 사용자의 로컬 시간을 기준으로 UTC+9 시간대를 수동으로 계산
+                    const now = new Date();
+                    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                    const koreaTime = utc + (9 * 3600000); // KST is UTC+9
+                    timeOffset = koreaTime - now.getTime();
+                }
             }
         }
 
+        // 시계를 업데이트하는 함수
         function updateClock() {
+            // 보정된 현재 시간 계산
             const now = new Date(new Date().getTime() + timeOffset);
             
-            // 한국 시간대로 확실히 설정
-            const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
-            
+            // 날짜/시간 표시 형식 설정
             const dateOptions = { 
                 timeZone: 'Asia/Seoul', 
                 year: 'numeric', 
                 month: '2-digit', 
                 day: '2-digit', 
-                weekday: 'short' 
+                weekday: 'short' // 'short'는 'Thu'와 같이 짧은 요일을 표시합니다.
             };
             const timeOptions = { 
                 timeZone: 'Asia/Seoul', 
@@ -1120,19 +1095,27 @@
                 hour12: false 
             };
 
-            dateDisplay.textContent = new Intl.DateTimeFormat('ko-KR', dateOptions).format(koreaTime);
-            timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(koreaTime);
+            // HTML 요소에 날짜와 시간 텍스트 업데이트
+            if (dateDisplay) {
+                // 날짜를 영어(미국) 형식으로 표시하여 요일이 'Thu' 등으로 나오게 함
+                dateDisplay.textContent = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
+            }
+            if (timeDisplay) {
+                // 시간은 기존과 동일하게 표시
+                timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+            }
         }
 
-        // 초기 시간 동기화 및 주기적 업데이트
+        // 페이지 로드 시 시간 동기화 실행 후, 1초마다 시계 업데이트
         syncTime().then(() => {
             updateClock();
             setInterval(updateClock, 1000);
         });
         
-        // 10분마다 시간 재동기화
+        // 10분마다 온라인 시간을 다시 동기화하여 정확도 유지
         setInterval(syncTime, 600000);
-
+        // --- END: CLOCK SCRIPT ---
+        
         // 방문자 카운터
         function animateVisitorCounter() {
             const counter = document.getElementById('visitor-count');
@@ -1152,34 +1135,31 @@
             }, 50);
         }
 
-// Web拍手 카운터
-const clapCount = document.getElementById('clap-count');
-if (clapCount) {
-    let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
-    clapCount.textContent = totalClaps.toString().padStart(3, '0');
-}
+        // Web拍手 카운터
+        const clapCount = document.getElementById('clap-count');
+        if (clapCount) {
+            let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+            clapCount.textContent = totalClaps.toString().padStart(3, '0');
+        }
 
-// Web拍手 버튼 클릭 이벤트
-const webClapBtn = document.getElementById('web-clap-btn');
-if (webClapBtn) {
-    webClapBtn.addEventListener('click', (e) => {
-        // ì¹´ìš´í„° ì¦ê°€
-        let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
-        totalClaps++;
-        localStorage.setItem('tomabard-claps', totalClaps.toString());
-        
-        // ìŠ¬ëž© ì´íŽ™íŠ¸
-        webClapBtn.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            webClapBtn.style.transform = '';
-        }, 100);
-        
-        // ê°ì‚¬ íŽ˜ì´ì§€ë¡œ ì´ë™
-        setTimeout(() => {
-            window.location.href = 'thanks.html';
-        }, 200);
-    });
-}
+        // Web拍手 버튼 클릭 이벤트
+        const webClapBtn = document.getElementById('web-clap-btn');
+        if (webClapBtn) {
+            webClapBtn.addEventListener('click', (e) => {
+                let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+                totalClaps++;
+                localStorage.setItem('tomabard-claps', totalClaps.toString());
+                
+                webClapBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    webClapBtn.style.transform = '';
+                }, 100);
+                
+                setTimeout(() => {
+                    window.location.href = 'thanks.html';
+                }, 200);
+            });
+        }
 
         // 텍스트 링크 복사 기능 추가
         const textCopyButton = document.getElementById('text-copy-button');
@@ -1197,8 +1177,8 @@ if (webClapBtn) {
                     }, 2000);
                 }).catch(err => {
                     console.error('클립보드 복사 실패:', err);
-                    textLinkCodeTextarea.select();
-                    textLinkCodeTextarea.setSelectionRange(0, 99999);
+                    sourceCodeTextarea.select();
+                    sourceCodeTextarea.setSelectionRange(0, 99999);
                     try {
                         document.execCommand('copy');
                         textCopyButton.textContent = 'Copied!';
@@ -1218,7 +1198,6 @@ if (webClapBtn) {
         const copyButton = document.getElementById('copy-button');
         const sourceCodeTextarea = document.getElementById('source-code');
         
-        // GitHub에서 직접 이미지를 가져오도록 설정
         const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
         sourceCodeTextarea.value = sourceCode;
 
@@ -1260,3 +1239,4 @@ if (webClapBtn) {
     </script>
 </body>
 </html>
+
