@@ -1035,56 +1035,102 @@
             }
         });
 
-        // 실시간 시계 기능
+// 실시간 시계 기능 (개선된 버전)
         const dateDisplay = document.getElementById('date-display');
         const timeDisplay = document.getElementById('time-display');
         let timeOffset = 0;
 
         async function syncTime() {
             try {
-                // 여러 시간 API를 시도해서 안정성 향상
-                let response;
-                try {
-                    response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
-                } catch (e) {
-                    // 첫 번째 API 실패시 두 번째 API 시도
-                    response = await fetch('https://api.ipgeolocation.io/timezone?apiKey=free&tz=Asia/Seoul');
+                // 더 안정적인 시간 API들을 순차적으로 시도
+                const timeAPIs = [
+                    'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Seoul',
+                    'https://worldtimeapi.org/api/timezone/Asia/Seoul',
+                    'https://api.ipgeolocation.io/timezone?apiKey=free&tz=Asia/Seoul'
+                ];
+                
+                let serverTime = null;
+                
+                for (const api of timeAPIs) {
+                    try {
+                        const response = await fetch(api, {
+                            timeout: 5000 // 5초 타임아웃
+                        });
+                        
+                        if (!response.ok) continue;
+                        
+                        const data = await response.json();
+                        
+                        // API별 응답 형식에 따른 처리
+                        if (data.dateTime) {
+                            // timeapi.io 형식
+                            serverTime = new Date(data.dateTime).getTime();
+                            break;
+                        } else if (data.datetime) {
+                            // worldtimeapi.org 형식
+                            serverTime = new Date(data.datetime).getTime();
+                            break;
+                        } else if (data.date_time) {
+                            // ipgeolocation.io 형식
+                            serverTime = new Date(data.date_time).getTime();
+                            break;
+                        }
+                    } catch (apiError) {
+                        console.warn(`Time API failed: ${api}`, apiError);
+                        continue;
+                    }
                 }
                 
-                if (!response.ok) throw new Error('Network response was not ok.');
-                const data = await response.json();
-                
-                // API 응답 형식에 따라 처리
-                let serverTime;
-                if (data.datetime) {
-                    serverTime = new Date(data.datetime).getTime();
-                } else if (data.date_time) {
-                    serverTime = new Date(data.date_time).getTime();
+                if (serverTime) {
+                    const localTime = new Date().getTime();
+                    timeOffset = serverTime - localTime;
+                    console.log('시간 동기화 성공. 오프셋:', timeOffset + 'ms');
                 } else {
-                    throw new Error('Invalid API response format');
+                    throw new Error('All time APIs failed');
                 }
                 
-                const localTime = new Date().getTime();
-                timeOffset = serverTime - localTime;
             } catch (error) {
-                // 온라인 시간 동기화 실패시 로컬 시간 사용 (에러 메시지 제거)
-                timeOffset = 0;
+                console.warn('온라인 시간 동기화 실패, 대한민국 표준시 추정값 사용:', error);
+                // 모든 API가 실패할 경우 UTC+9 시간대로 강제 조정
+                const now = new Date();
+                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const koreaTime = utc + (9 * 3600000); // UTC+9
+                timeOffset = koreaTime - now.getTime();
             }
         }
 
         function updateClock() {
             const now = new Date(new Date().getTime() + timeOffset);
-            const dateOptions = { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
-            const timeOptions = { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            
+            // 한국 시간대로 확실히 설정
+            const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+            
+            const dateOptions = { 
+                timeZone: 'Asia/Seoul', 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                weekday: 'short' 
+            };
+            const timeOptions = { 
+                timeZone: 'Asia/Seoul', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: false 
+            };
 
-            dateDisplay.textContent = new Intl.DateTimeFormat('ko-KR', dateOptions).format(now);
-            timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+            dateDisplay.textContent = new Intl.DateTimeFormat('ko-KR', dateOptions).format(koreaTime);
+            timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(koreaTime);
         }
 
+        // 초기 시간 동기화 및 주기적 업데이트
         syncTime().then(() => {
             updateClock();
             setInterval(updateClock, 1000);
         });
+        
+        // 10분마다 시간 재동기화
         setInterval(syncTime, 600000);
 
         // 방문자 카운터
