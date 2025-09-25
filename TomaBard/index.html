@@ -766,69 +766,56 @@
 /* Web拍手 버튼 스타일 */
 .web-clap-section {
     text-align: center;
-    margin: 40px 0;
-    padding: 30px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
 }
 
 .web-clap-title {
-    color: var(--accent-blue);
-    font-size: 1.1em;
-    margin-bottom: 15px;
-    text-shadow: 0 0 8px var(--accent-blue);
+    color: var(--secondary-color);
+    font-size: 0.9em;
+    margin-bottom: 12px;
     font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
 }
 
-.web-clap-button {
+.web-clap-btn {
     display: inline-block;
-    background: linear-gradient(135deg, var(--accent-color) 0%, #66ff99 100%);
-    color: #000;
-    padding: 15px 40px;
-    border: none;
-    border-radius: 30px;
-    font-size: 1.1em;
-    font-weight: bold;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary-color);
+    padding: 8px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: normal;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+    font-family: inherit;
     position: relative;
-    overflow: hidden;
 }
 
-.web-clap-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0, 255, 65, 0.5);
-    background: linear-gradient(135deg, #66ff99 0%, var(--accent-color) 100%);
+.web-clap-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
 }
 
-.web-clap-button::before {
-    content: '👏';
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.2em;
-    animation: clap 2s ease-in-out infinite;
-}
-
-@keyframes clap {
-    0%, 100% { transform: translateY(-50%) rotate(0deg); }
-    25% { transform: translateY(-50%) rotate(-10deg); }
-    75% { transform: translateY(-50%) rotate(10deg); }
-}
-
-.web-clap-button span {
-    margin-left: 25px;
+.web-clap-btn:active {
+    transform: translateY(0);
+    background: rgba(0, 255, 65, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
 }
 
 .web-clap-count {
-    margin-top: 15px;
-    font-size: 0.9em;
+    margin-top: 10px;
+    font-size: 0.75em;
     color: var(--secondary-color);
     font-family: 'Orbitron', monospace;
+    opacity: 0.7;
 }
     </style>
 </head>
@@ -929,12 +916,12 @@
 
 <!-- Web拍手 섹션 -->
 <div class="web-clap-section">
-    <h3 class="web-clap-title">Web拍手</h3>
-    <a href="thanks.html" class="web-clap-button">
-        <span>応援する！</span>
-    </a>
+    <h3 class="web-clap-title">応援する！</h3>
+    <button class="web-clap-btn" id="web-clap-btn">
+        👏 web拍手
+    </button>
     <div class="web-clap-count">
-        Total Claps: <span id="clap-count">0</span>
+        Total: <span id="clap-count">0</span>
     </div>
 </div>
 
@@ -1123,16 +1110,28 @@
 const clapCount = document.getElementById('clap-count');
 if (clapCount) {
     let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
-    clapCount.textContent = totalClaps.toString().padStart(5, '0');
+    clapCount.textContent = totalClaps.toString().padStart(3, '0');
 }
 
 // Web拍手 버튼 클릭 이벤트
-const webClapButton = document.querySelector('.web-clap-button');
-if (webClapButton) {
-    webClapButton.addEventListener('click', (e) => {
+const webClapBtn = document.getElementById('web-clap-btn');
+if (webClapBtn) {
+    webClapBtn.addEventListener('click', (e) => {
+        // ì¹´ìš´í„° ì¦ê°€
         let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
         totalClaps++;
         localStorage.setItem('tomabard-claps', totalClaps.toString());
+        
+        // ìŠ¬ëž© ì´íŽ™íŠ¸
+        webClapBtn.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            webClapBtn.style.transform = '';
+        }, 100);
+        
+        // ê°ì‚¬ íŽ˜ì´ì§€ë¡œ ì´ë™
+        setTimeout(() => {
+            window.location.href = 'thanks.html';
+        }, 200);
     });
 }
 
