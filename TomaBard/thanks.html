@@ -88,15 +88,20 @@
             }
         }
 
-        .thanks-title {
-            font-size: 2em;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--accent-color), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite;
-        }
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.thanks-title {
+    background: linear-gradient(45deg, var(--accent-color), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: glow 2s ease-in-out infinite;
+    /* ✨ 이모지와 간격을 주기 위해 추가 */
+    margin: 0 10px;
+}
 
         @keyframes glow {
             0%, 100% { 
@@ -232,7 +237,7 @@
     <div class="hearts" id="hearts"></div>
     
     <div class="thanks-container">
-        <h1 class="thanks-title">✨ Thank You! ✨</h1>
+<h1>✨<span class="thanks-title">Thank You!</span>✨</h1>
         
         <p class="thanks-message">
             応援ありがとうございます！<br>
