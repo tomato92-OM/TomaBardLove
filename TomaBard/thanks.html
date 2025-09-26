@@ -287,18 +287,18 @@
         }
 
         // 하트 애니메이션 생성
-function createHeart() {
-    const hearts = ['🍅', '🩸', '🍅', '🩸', '🍅', '🩸'];
-    const heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.style.left = Math.random() * 100 + '%';
-    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-    document.getElementById('hearts').appendChild(heart);
-    
-    setTimeout(() => {
-        heart.remove();
-    }, 4000);
-}
+        function createHeart() {
+            const hearts = ['🔴', '🩸', '🔴', '🩸', '🔴', '🩸'];
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            document.getElementById('hearts').appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 4000);
+        }
 
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', () => {
@@ -312,11 +312,6 @@ function createHeart() {
             
             // 계속 하트 생성
             setInterval(createHeart, 2000);
-            
-            // 방문 카운트 업데이트
-            let thankCount = parseInt(localStorage.getItem('tomabard-thanks') || '0');
-            thankCount++;
-            localStorage.setItem('tomabard-thanks', thankCount.toString());
         });
     </script>
 </body>
