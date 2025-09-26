@@ -763,61 +763,202 @@
                 padding: 15px;
             }
         }
-        /* Web拍手 버튼 스타일 */
-        .web-clap-section {
-            text-align: center;
-            margin: 30px 0;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-        }
+/* Web拍手 버튼 스타일 */
+.web-clap-section {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
 
-        .web-clap-title {
-            color: var(--secondary-color);
-            font-size: 0.9em;
-            margin-bottom: 12px;
-            font-family: 'Noto Sans KR', sans-serif;
-            font-weight: 400;
-        }
+.web-clap-title {
+    color: var(--secondary-color);
+    font-size: 0.9em;
+    margin-bottom: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+}
 
-        .web-clap-btn {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--primary-color);
-            padding: 8px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            font-size: 0.85em;
-            font-weight: normal;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            font-family: inherit;
-            position: relative;
-        }
+.web-clap-btn {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary-color);
+    padding: 8px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: normal;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-family: inherit;
+    position: relative;
+}
 
-        .web-clap-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
-        }
+.web-clap-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
 
-        .web-clap-btn:active {
-            transform: translateY(0);
-            background: rgba(0, 255, 65, 0.1);
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-        }
+.web-clap-btn:active {
+    transform: translateY(0);
+    background: rgba(0, 255, 65, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
 
-        .web-clap-count {
-            margin-top: 10px;
-            font-size: 0.75em;
-            color: var(--secondary-color);
-            font-family: 'Orbitron', monospace;
-            opacity: 0.7;
-        }
+.web-clap-count {
+    margin-top: 10px;
+    font-size: 0.75em;
+    color: var(--secondary-color);
+    font-family: 'Orbitron', monospace;
+    opacity: 0.7;
+}
     </style>
+<!-- Firebase SDK -->
+<script type="module">
+    // Firebase 설정 및 초기화
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA06vzfbc7wJ9bAn9C_uJBm09idUKHf-Ao",
+        authDomain: "toma-x-bardock-alliance-e1280.firebaseapp.com",
+        projectId: "toma-x-bardock-alliance-e1280",
+        storageBucket: "toma-x-bardock-alliance-e1280.firebasestorage.app",
+        messagingSenderId: "903251607021",
+        appId: "1:903251607021:web:517d044a1f4bcaf5f7fbe4"
+    };
+
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 방문자 카운터 업데이트 함수
+    async function updateVisitorCount() {
+        try {
+            const statsRef = doc(db, 'siteStats', 'counters');
+            
+            const statsDoc = await getDoc(statsRef);
+            
+            if (statsDoc.exists()) {
+                await updateDoc(statsRef, {
+                    visitors: increment(1)
+                });
+                
+                const updatedDoc = await getDoc(statsRef);
+                const data = updatedDoc.data();
+                
+                const visitorCountElement = document.getElementById('visitor-count');
+                if (visitorCountElement) {
+                    animateCounter(visitorCountElement, data.visitors);
+                }
+            } else {
+                await setDoc(statsRef, {
+                    visitors: 1,
+                    claps: 0,
+                    lastUpdated: new Date()
+                });
+                
+                const visitorCountElement = document.getElementById('visitor-count');
+                if (visitorCountElement) {
+                    animateCounter(visitorCountElement, 1);
+                }
+            }
+        } catch (error) {
+            console.error('Firebase 연결 실패, 로컬 스토리지 사용:', error);
+            let localCount = parseInt(localStorage.getItem('tomabard-visitors') || '0') + 1;
+            localStorage.setItem('tomabard-visitors', localCount.toString());
+            
+            const visitorCountElement = document.getElementById('visitor-count');
+            if (visitorCountElement) {
+                animateCounter(visitorCountElement, localCount);
+            }
+        }
+    }
+
+    // Web拍手 카운터 업데이트 함수
+    async function updateClapCount() {
+        try {
+            const statsRef = doc(db, 'siteStats', 'counters');
+            
+            await updateDoc(statsRef, {
+                claps: increment(1),
+                lastUpdated: new Date()
+            });
+            
+            const updatedDoc = await getDoc(statsRef);
+            const data = updatedDoc.data();
+            
+            return data.claps;
+        } catch (error) {
+            console.error('Firebase 연결 실패, 로컬 스토리지 사용:', error);
+            let localClaps = parseInt(localStorage.getItem('tomabard-claps') || '0') + 1;
+            localStorage.setItem('tomabard-claps', localClaps.toString());
+            return localClaps;
+        }
+    }
+
+    // 박수 카운터 로드 함수
+    async function loadClapCount() {
+        try {
+            const statsRef = doc(db, 'siteStats', 'counters');
+            const statsDoc = await getDoc(statsRef);
+            
+            if (statsDoc.exists()) {
+                const data = statsDoc.data();
+                const clapCountElement = document.getElementById('clap-count');
+                if (clapCountElement) {
+                    clapCountElement.textContent = data.claps.toString().padStart(3, '0');
+                }
+            } else {
+                await setDoc(statsRef, {
+                    visitors: 0,
+                    claps: 0,
+                    lastUpdated: new Date()
+                });
+            }
+        } catch (error) {
+            console.error('Firebase 연결 실패, 로컬 스토리지 사용:', error);
+            const localClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+            const clapCountElement = document.getElementById('clap-count');
+            if (clapCountElement) {
+                clapCountElement.textContent = localClaps.toString().padStart(3, '0');
+            }
+        }
+    }
+
+    // 카운터 애니메이션 함수 (기존과 동일)
+    function animateCounter(element, targetCount) {
+        let currentCount = 0;
+        const increment = Math.ceil(targetCount / 30);
+        
+        const timer = setInterval(() => {
+            currentCount += increment;
+            if (currentCount >= targetCount) {
+                currentCount = targetCount;
+                clearInterval(timer);
+            }
+            element.textContent = currentCount.toString().padStart(6, '0');
+        }, 50);
+    }
+
+    // 페이지 로드 시 실행
+    window.addEventListener('DOMContentLoaded', () => {
+        updateVisitorCount();
+        loadClapCount();
+    });
+
+    // 전역으로 함수 노출
+    window.firebaseUtils = {
+        updateVisitorCount,
+        updateClapCount,
+        loadClapCount
+    };
+</script>
 </head>
 <body>
     <div class="music-controls">
@@ -840,7 +981,7 @@
                 </div>
                 <div class="display-panel visitor-panel">
                     <div class="label">VISITORS</div>
-                    <div class="count" id="visitor-count">000000</div>
+                    <div class="count" id="visitor-count">000001</div>
                 </div>
             </div>
         </header>
@@ -914,16 +1055,16 @@
                 </div>
             </div>
 
-            <!-- Web拍手 섹션 -->
-            <div class="web-clap-section">
-                <h3 class="web-clap-title">応援する！</h3>
-                <button class="web-clap-btn" id="web-clap-btn">
-                    👏 web拍手
-                </button>
-                <div class="web-clap-count">
-                    Total: <span id="clap-count">0</span>
-                </div>
-            </div>
+<!-- Web拍手 섹션 -->
+<div class="web-clap-section">
+    <h3 class="web-clap-title">応援する！</h3>
+    <button class="web-clap-btn" id="web-clap-btn">
+        👏 web拍手
+    </button>
+    <div class="web-clap-count">
+        Total: <span id="clap-count">0</span>
+    </div>
+</div>
 
             <!-- 사이트 정보 -->
             <div class="site-info">
@@ -958,257 +1099,282 @@
     <div id="youtube-player"></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
-    
-    <!-- ================== START: FIREBASE & MAIN LOGIC SCRIPT ================== -->
-    <script type="module">
-        // Import Firebase functions from the latest SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-        import { getFirestore, doc, updateDoc, increment, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <script>
+    let player;
+    let isPlayerReady = false;
+
+    // YouTube API 준비
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('youtube-player', {
+            height: '1',
+            width: '1',
+            videoId: 'Lm77VCkf_do', // 여기에 원하는 YouTube 비디오 ID 입력
+            playerVars: {
+                'autoplay': 1,
+                'loop': 1,
+                'playlist': 'Lm77VCkf_do',
+                'controls': 0,
+                'disablekb': 1,
+                'enablejsapi': 1,
+                'fs': 0,
+                'iv_load_policy': 3,
+                'modestbranding': 1,
+                'playsinline': 1,
+                'rel': 0,
+                'showinfo': 0
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        isPlayerReady = true;
+        player.setVolume(30);
+        document.getElementById('play-btn').disabled = false;
+    }
+
+    function onPlayerStateChange(event) {
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
         
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-          apiKey: "AIzaSyCHx6UZcyDBhfQfgIIxuvUXHb7q-GdsZWA",
-          authDomain: "toma-x-bardock-alliance.firebaseapp.com",
-          projectId: "toma-x-bardock-alliance",
-          storageBucket: "toma-x-bardock-alliance.firebasestorage.app",
-          messagingSenderId: "1096144260193",
-          appId: "1:1096144260193:web:163a38328b5cd08b61ee20",
-          measurementId: "G-YGBV0Y9T6F"
-        };
+        if (event.data == YT.PlayerState.PLAYING) {
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+        } else {
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+    }
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
+    document.addEventListener('DOMContentLoaded', () => {
+        // 음악 컨트롤 추가
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeDisplay = document.getElementById('volume-display');
 
-        // --- YouTube Player Logic (must be global for the API script) ---
-        let player;
-        let isPlayerReady = false;
+        playBtn.addEventListener('click', () => {
+            if (isPlayerReady) {
+                player.playVideo();
+            }
+        });
 
-        window.onYouTubeIframeAPIReady = function() {
-            player = new YT.Player('youtube-player', {
-                height: '1',
-                width: '1',
-                videoId: 'Lm77VCkf_do', // YouTube Video ID
-                playerVars: {
-                    'autoplay': 1, 'loop': 1, 'playlist': 'Lm77VCkf_do',
-                    'controls': 0, 'disablekb': 1, 'enablejsapi': 1,
-                    'fs': 0, 'iv_load_policy': 3, 'modestbranding': 1,
-                    'playsinline': 1, 'rel': 0, 'showinfo': 0
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+        pauseBtn.addEventListener('click', () => {
+            if (isPlayerReady) {
+                player.pauseVideo();
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value;
+            volumeDisplay.textContent = volume;
+            if (isPlayerReady) {
+                player.setVolume(volume);
+            }
+        });
+
+        // --- START: CLOCK SCRIPT ---
+        const dateDisplay = document.getElementById('date-display');
+        const timeDisplay = document.getElementById('time-display');
+        let timeOffset = 0; // 로컬 시간과 서버 시간의 차이 (ms)
+
+        // 온라인 시간 API를 통해 정확한 서울 시간을 가져오는 함수
+        async function syncTime() {
+            try {
+                // 1차 API 시도: worldtimeapi.org (안정성이 더 높을 수 있음)
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
+                if (!response.ok) throw new Error('Primary API (worldtimeapi.org) failed');
+                const data = await response.json();
+                // 일부 브라우저 호환성을 위해 마이크로초를 제외한 ISO 8601 형식 사용
+                const serverTime = new Date(data.datetime.substring(0, 26)).getTime();
+                const localTime = new Date().getTime();
+                timeOffset = serverTime - localTime;
+                console.log('Time synchronized successfully with worldtimeapi.org.');
+            } catch (error) {
+                console.warn(error.message + '. Trying secondary API (timeapi.io)...');
+                try {
+                    // 2차 API 시도: timeapi.io
+                    const response2 = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Seoul');
+                    if (!response2.ok) throw new Error('Secondary API (timeapi.io) also failed');
+                    const data2 = await response2.json();
+                    const serverTime2 = new Date(data2.dateTime).getTime();
+                    const localTime2 = new Date().getTime();
+                    timeOffset = serverTime2 - localTime2;
+                    console.log('Time synchronized successfully with timeapi.io.');
+                } catch (error2) {
+                    console.warn(error2.message + '. Could not fetch online time. Falling back to local time with UTC+9 adjustment.');
+                    // API 호출 실패 시, 사용자의 로컬 시간을 기준으로 UTC+9 시간대를 수동으로 계산
+                    const now = new Date();
+                    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                    const koreaTime = utc + (9 * 3600000); // KST is UTC+9
+                    timeOffset = koreaTime - now.getTime();
                 }
+            }
+        }
+
+        // 시계를 업데이트하는 함수
+        function updateClock() {
+            // 보정된 현재 시간 계산
+            const now = new Date(new Date().getTime() + timeOffset);
+            
+            // 날짜/시간 표시 형식 설정
+            const dateOptions = { 
+                timeZone: 'Asia/Seoul', 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                weekday: 'short' // 'short'는 'Thu'와 같이 짧은 요일을 표시합니다.
+            };
+            const timeOptions = { 
+                timeZone: 'Asia/Seoul', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: false 
+            };
+
+            // HTML 요소에 날짜와 시간 텍스트 업데이트
+            if (dateDisplay) {
+                // 날짜를 영어(미국) 형식으로 표시하여 요일이 'Thu' 등으로 나오게 함
+                dateDisplay.textContent = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
+            }
+            if (timeDisplay) {
+                // 시간은 기존과 동일하게 표시
+                timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+            }
+        }
+
+        // 페이지 로드 시 시간 동기화 실행 후, 1초마다 시계 업데이트
+        syncTime().then(() => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+        
+        // 10분마다 온라인 시간을 다시 동기화하여 정확도 유지
+        setInterval(syncTime, 600000);
+        // --- END: CLOCK SCRIPT ---
+        
+        // 방문자 카운터
+const webClapBtn = document.getElementById('web-clap-btn');
+if (webClapBtn) {
+    webClapBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        webClapBtn.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            webClapBtn.style.transform = '';
+        }, 100);
+        
+        // Firebase 함수 사용
+        const newClapCount = await window.firebaseUtils.updateClapCount();
+        
+        const clapCountElement = document.getElementById('clap-count');
+        if (clapCountElement) {
+            clapCountElement.textContent = newClapCount.toString().padStart(3, '0');
+        }
+        
+        setTimeout(() => {
+            window.location.href = 'thanks.html';
+        }, 300);
+    });
+}
+
+        // Web拍手 버튼 클릭 이벤트
+        const webClapBtn = document.getElementById('web-clap-btn');
+        if (webClapBtn) {
+            webClapBtn.addEventListener('click', (e) => {
+                let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+                totalClaps++;
+                localStorage.setItem('tomabard-claps', totalClaps.toString());
+                
+                webClapBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    webClapBtn.style.transform = '';
+                }, 100);
+                
+                setTimeout(() => {
+                    window.location.href = 'thanks.html';
+                }, 200);
             });
         }
 
-        function onPlayerReady(event) {
-            isPlayerReady = true;
-            if (player && typeof player.setVolume === 'function') {
-                player.setVolume(30);
-            }
-            const playBtn = document.getElementById('play-btn');
-            if(playBtn) playBtn.disabled = false;
-        }
-
-        function onPlayerStateChange(event) {
-            const playBtn = document.getElementById('play-btn');
-            const pauseBtn = document.getElementById('pause-btn');
-            if (event.data == YT.PlayerState.PLAYING) {
-                if(playBtn) playBtn.disabled = true;
-                if(pauseBtn) pauseBtn.disabled = false;
-            } else {
-                if(playBtn) playBtn.disabled = false;
-                if(pauseBtn) pauseBtn.disabled = true;
-            }
-        }
-
-        // --- Main logic runs after DOM is loaded ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Firestore Counter Logic ---
-            const visitorCounterRef = doc(db, "site_stats", "visitors");
-            const clapCounterRef = doc(db, "site_stats", "claps");
-
-            // 1. Visitor Counter
-            function setupVisitorCounter() {
-                const counterElement = document.getElementById('visitor-count');
-                onSnapshot(visitorCounterRef, (docSnap) => {
-                    if (docSnap.exists() && docSnap.data().count) {
-                        counterElement.textContent = docSnap.data().count.toString().padStart(6, '0');
-                    } else {
-                        counterElement.textContent = '000000';
-                    }
-                }, (error) => {
-                    console.error("Visitor count snapshot error: ", error);
-                });
-
-                if (!sessionStorage.getItem('visitorCounted')) {
-                    updateDoc(visitorCounterRef, { count: increment(1) })
-                        .then(() => {
-                            sessionStorage.setItem('visitorCounted', 'true');
-                        })
-                        .catch(async (error) => {
-                            if (error.code === 'not-found') {
-                                await setDoc(visitorCounterRef, { count: 1 });
-                                sessionStorage.setItem('visitorCounted', 'true');
-                            } else {
-                                console.error("Error updating visitor counter: ", error);
-                            }
-                        });
-                }
-            }
-
-            // 2. Web Clap Counter
-            function setupClapCounter() {
-                const clapCountElement = document.getElementById('clap-count');
-                const webClapBtn = document.getElementById('web-clap-btn');
-
-                onSnapshot(clapCounterRef, (docSnap) => {
-                    if (docSnap.exists() && docSnap.data().count) {
-                        clapCountElement.textContent = docSnap.data().count.toString();
-                    } else {
-                        clapCountElement.textContent = '0';
-                    }
-                }, (error) => {
-                    console.error("Clap count snapshot error: ", error);
-                });
-
-                if (webClapBtn) {
-                    webClapBtn.addEventListener('click', () => {
-                        updateDoc(clapCounterRef, { count: increment(1) })
-                            .catch(async (error) => {
-                                if (error.code === 'not-found') {
-                                    await setDoc(clapCounterRef, { count: 1 });
-                                } else {
-                                    console.error("Error updating clap counter: ", error);
-                                }
-                            });
-                        
-                        webClapBtn.style.transform = 'scale(0.95)';
-                        setTimeout(() => { webClapBtn.style.transform = ''; }, 100);
-                        setTimeout(() => { if(window.location.href.includes('thanks.html') === false) { window.location.href = 'thanks.html'; } }, 200);
-                    });
-                }
-            }
-            
-            // --- Other Page Logic ---
-            function setupMusicControls() {
-                const playBtn = document.getElementById('play-btn');
-                const pauseBtn = document.getElementById('pause-btn');
-                const volumeSlider = document.getElementById('volume-slider');
-                const volumeDisplay = document.getElementById('volume-display');
-
-                playBtn.addEventListener('click', () => {
-                    if (isPlayerReady && player && typeof player.playVideo === 'function') {
-                        player.playVideo();
-                    }
-                });
-
-                pauseBtn.addEventListener('click', () => {
-                    if (isPlayerReady && player && typeof player.pauseVideo === 'function') {
-                        player.pauseVideo();
-                    }
-                });
-
-                volumeSlider.addEventListener('input', (e) => {
-                    const volume = e.target.value;
-                    volumeDisplay.textContent = volume;
-                    if (isPlayerReady && player && typeof player.setVolume === 'function') {
-                        player.setVolume(volume);
-                    }
-                });
-            }
-
-            async function setupClock() {
-                const dateDisplay = document.getElementById('date-display');
-                const timeDisplay = document.getElementById('time-display');
-                let timeOffset = 0;
-
-                async function syncTime() {
+        // 텍스트 링크 복사 기능 추가
+        const textCopyButton = document.getElementById('text-copy-button');
+        const textLinkCodeTextarea = document.getElementById('text-link-code');
+        
+        if (textCopyButton && textLinkCodeTextarea) {
+            textCopyButton.addEventListener('click', () => {
+                const textLinkCode = textLinkCodeTextarea.value;
+                navigator.clipboard.writeText(textLinkCode).then(() => {
+                    textCopyButton.textContent = 'Copied!';
+                    textCopyButton.classList.add('copied');
+                    setTimeout(() => {
+                        textCopyButton.textContent = 'Copy Text Link';
+                        textCopyButton.classList.remove('copied');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('클립보드 복사 실패:', err);
+                    sourceCodeTextarea.select();
+                    sourceCodeTextarea.setSelectionRange(0, 99999);
                     try {
-                        const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
-                        if (!response.ok) throw new Error('worldtimeapi.org failed');
-                        const data = await response.json();
-                        const serverTime = new Date(data.datetime.substring(0, 26)).getTime();
-                        timeOffset = serverTime - new Date().getTime();
-                    } catch (error) {
-                        console.warn(error.message + '. Falling back to local time UTC+9.');
-                        const now = new Date();
-                        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-                        timeOffset = (utc + (9 * 3600000)) - now.getTime();
+                        document.execCommand('copy');
+                        textCopyButton.textContent = 'Copied!';
+                        textCopyButton.classList.add('copied');
+                        setTimeout(() => {
+                            textCopyButton.textContent = 'Copy Text Link';
+                            textCopyButton.classList.remove('copied');
+                        }, 2000);
+                    } catch (execErr) {
+                        alert('복사에 실패했습니다. 직접 복사해주세요.');
                     }
+                });
+            });
+        }
+
+        // 배너 소스 코드 복사 기능
+        const copyButton = document.getElementById('copy-button');
+        const sourceCodeTextarea = document.getElementById('source-code');
+        
+        const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
+        sourceCodeTextarea.value = sourceCode;
+
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(sourceCode).then(() => {
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('copied');
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy Source';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('클립보드 복사 실패:', err);
+                sourceCodeTextarea.select();
+                sourceCodeTextarea.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
+                    copyButton.textContent = 'Copied!';
+                    copyButton.classList.add('copied');
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy Source';
+                        copyButton.classList.remove('copied');
+                    }, 2000);
+                } catch (execErr) {
+                    alert('복사에 실패했습니다. 직접 복사해주세요.');
                 }
-
-                function updateClock() {
-                    const now = new Date(new Date().getTime() + timeOffset);
-                    const dateOptions = { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
-                    const timeOptions = { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-                    if (dateDisplay) dateDisplay.textContent = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
-                    if (timeDisplay) timeDisplay.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
-                }
-
-                await syncTime();
-                updateClock();
-                setInterval(updateClock, 1000);
-                setInterval(syncTime, 600000);
-            }
-            
-            function setupCopyButtons() {
-                const textCopyButton = document.getElementById('text-copy-button');
-                const textLinkCodeTextarea = document.getElementById('text-link-code');
-                if (textCopyButton && textLinkCodeTextarea) {
-                    textCopyButton.addEventListener('click', () => {
-                        navigator.clipboard.writeText(textLinkCodeTextarea.value).then(() => {
-                            textCopyButton.textContent = 'Copied!';
-                            textCopyButton.classList.add('copied');
-                            setTimeout(() => {
-                                textCopyButton.textContent = 'Copy Text Link';
-                                textCopyButton.classList.remove('copied');
-                            }, 2000);
-                        }).catch(err => {
-                            console.error('Failed to copy text link: ', err);
-                        });
-                    });
-                }
-
-                const copyButton = document.getElementById('copy-button');
-                const sourceCodeTextarea = document.getElementById('source-code');
-                const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
-                if(sourceCodeTextarea) sourceCodeTextarea.value = sourceCode;
-
-                if(copyButton) {
-                    copyButton.addEventListener('click', () => {
-                        navigator.clipboard.writeText(sourceCode).then(() => {
-                            copyButton.textContent = 'Copied!';
-                            copyButton.classList.add('copied');
-                            setTimeout(() => {
-                                copyButton.textContent = 'Copy Source';
-                                copyButton.classList.remove('copied');
-                            }, 2000);
-                        }).catch(err => {
-                            console.error('Failed to copy source code: ', err);
-                        });
-                    });
-                }
-            }
-            
-            function setLastUpdateDate() {
-                const lastUpdateElement = document.getElementById('last-update');
-                const today = new Date();
-                const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
-                if(lastUpdateElement) lastUpdateElement.textContent = formattedDate;
-            }
-
-            // Run all setup functions
-            setupVisitorCounter();
-            setupClapCounter();
-            setupMusicControls();
-            setupClock();
-            setupCopyButtons();
-            setLastUpdateDate();
+            });
         });
+
+        // 초기화
+        
+        // 마지막 업데이트 날짜 설정
+        const lastUpdateElement = document.getElementById('last-update');
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+        lastUpdateElement.textContent = formattedDate;
+    });
     </script>
 </body>
 </html>
