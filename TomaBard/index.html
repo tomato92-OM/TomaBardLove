@@ -818,147 +818,6 @@
     opacity: 0.7;
 }
     </style>
-<!-- Firebase SDK -->
-<script type="module">
-    // Firebase 설정 및 초기화
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyA06vzfbc7wJ9bAn9C_uJBm09idUKHf-Ao",
-        authDomain: "toma-x-bardock-alliance-e1280.firebaseapp.com",
-        projectId: "toma-x-bardock-alliance-e1280",
-        storageBucket: "toma-x-bardock-alliance-e1280.firebasestorage.app",
-        messagingSenderId: "903251607021",
-        appId: "1:903251607021:web:517d044a1f4bcaf5f7fbe4"
-    };
-
-    // Firebase 초기화
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // 방문자 카운터 업데이트 함수
-    async function updateVisitorCount() {
-        try {
-            const statsRef = doc(db, 'siteStats', 'counters');
-            
-            const statsDoc = await getDoc(statsRef);
-            
-            if (statsDoc.exists()) {
-                await updateDoc(statsRef, {
-                    visitors: increment(1)
-                });
-                
-                const updatedDoc = await getDoc(statsRef);
-                const data = updatedDoc.data();
-                
-                const visitorCountElement = document.getElementById('visitor-count');
-                if (visitorCountElement) {
-                    animateCounter(visitorCountElement, data.visitors);
-                }
-            } else {
-                await setDoc(statsRef, {
-                    visitors: 1,
-                    claps: 0,
-                    lastUpdated: new Date()
-                });
-                
-                const visitorCountElement = document.getElementById('visitor-count');
-                if (visitorCountElement) {
-                    animateCounter(visitorCountElement, 1);
-                }
-            }
-        } catch (error) {
-            console.error('Firebase 연결 실패, 로컬 스토리지 사용:', error);
-            let localCount = parseInt(localStorage.getItem('tomabard-visitors') || '0') + 1;
-            localStorage.setItem('tomabard-visitors', localCount.toString());
-            
-            const visitorCountElement = document.getElementById('visitor-count');
-            if (visitorCountElement) {
-                animateCounter(visitorCountElement, localCount);
-            }
-        }
-    }
-
-    // Web拍手 카운터 업데이트 함수
-    async function updateClapCount() {
-        try {
-            const statsRef = doc(db, 'siteStats', 'counters');
-            
-            await updateDoc(statsRef, {
-                claps: increment(1),
-                lastUpdated: new Date()
-            });
-            
-            const updatedDoc = await getDoc(statsRef);
-            const data = updatedDoc.data();
-            
-            return data.claps;
-        } catch (error) {
-            console.error('Firebase 연결 실패, 로컬 스토리지 사용:', error);
-            let localClaps = parseInt(localStorage.getItem('tomabard-claps') || '0') + 1;
-            localStorage.setItem('tomabard-claps', localClaps.toString());
-            return localClaps;
-        }
-    }
-
-    // 박수 카운터 로드 함수
-    async function loadClapCount() {
-        try {
-            const statsRef = doc(db, 'siteStats', 'counters');
-            const statsDoc = await getDoc(statsRef);
-            
-            if (statsDoc.exists()) {
-                const data = statsDoc.data();
-                const clapCountElement = document.getElementById('clap-count');
-                if (clapCountElement) {
-                    clapCountElement.textContent = data.claps.toString().padStart(3, '0');
-                }
-            } else {
-                await setDoc(statsRef, {
-                    visitors: 0,
-                    claps: 0,
-                    lastUpdated: new Date()
-                });
-            }
-        } catch (error) {
-            console.error('Firebase 연결 실패, 로컬 스토리지 사용:', error);
-            const localClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
-            const clapCountElement = document.getElementById('clap-count');
-            if (clapCountElement) {
-                clapCountElement.textContent = localClaps.toString().padStart(3, '0');
-            }
-        }
-    }
-
-    // 카운터 애니메이션 함수 (기존과 동일)
-    function animateCounter(element, targetCount) {
-        let currentCount = 0;
-        const increment = Math.ceil(targetCount / 30);
-        
-        const timer = setInterval(() => {
-            currentCount += increment;
-            if (currentCount >= targetCount) {
-                currentCount = targetCount;
-                clearInterval(timer);
-            }
-            element.textContent = currentCount.toString().padStart(6, '0');
-        }, 50);
-    }
-
-    // 페이지 로드 시 실행
-    window.addEventListener('DOMContentLoaded', () => {
-        updateVisitorCount();
-        loadClapCount();
-    });
-
-    // 전역으로 함수 노출
-    window.firebaseUtils = {
-        updateVisitorCount,
-        updateClapCount,
-        loadClapCount
-    };
-</script>
 </head>
 <body>
     <div class="music-controls">
@@ -1258,29 +1117,30 @@
         // --- END: CLOCK SCRIPT ---
         
         // 방문자 카운터
-const webClapBtn = document.getElementById('web-clap-btn');
-if (webClapBtn) {
-    webClapBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        
-        webClapBtn.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            webClapBtn.style.transform = '';
-        }, 100);
-        
-        // Firebase 함수 사용
-        const newClapCount = await window.firebaseUtils.updateClapCount();
-        
-        const clapCountElement = document.getElementById('clap-count');
-        if (clapCountElement) {
-            clapCountElement.textContent = newClapCount.toString().padStart(3, '0');
+        function animateVisitorCounter() {
+            const counter = document.getElementById('visitor-count');
+            let count = parseInt(localStorage.getItem('tomabard-visitors') || '0') + 1;
+            localStorage.setItem('tomabard-visitors', count.toString());
+            
+            let current = 0;
+            const increment = Math.ceil(count / 30);
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= count) {
+                    current = count;
+                    clearInterval(timer);
+                }
+                counter.textContent = current.toString().padStart(6, '0');
+            }, 50);
         }
-        
-        setTimeout(() => {
-            window.location.href = 'thanks.html';
-        }, 300);
-    });
-}
+
+        // Web拍手 카운터
+        const clapCount = document.getElementById('clap-count');
+        if (clapCount) {
+            let totalClaps = parseInt(localStorage.getItem('tomabard-claps') || '0');
+            clapCount.textContent = totalClaps.toString().padStart(3, '0');
+        }
 
         // Web拍手 버튼 클릭 이벤트
         const webClapBtn = document.getElementById('web-clap-btn');
@@ -1368,6 +1228,7 @@ if (webClapBtn) {
         });
 
         // 초기화
+        animateVisitorCounter();
         
         // 마지막 업데이트 날짜 설정
         const lastUpdateElement = document.getElementById('last-update');
