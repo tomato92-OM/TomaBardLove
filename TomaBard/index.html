@@ -875,39 +875,35 @@
             <!-- 배너 섹션 -->
             <div class="banner-section">
                 <h3>バナー</h3>
-                <div class="banner-grid">
-                    <div class="banner-container">
-                        <div class="banner-image"></div>
-                        <div class="banner-tooltip">
-                            <p>Copy the code to join us.</p>
-                            <textarea id="source-code" rows="3" readonly></textarea>
-                            <button id="copy-button">Copy Source</button>
-                        </div>
-                    </div>
-                    
-<div class="banner-container">
-    <div class="banner-image" style="background-image: url('https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard02.png');"></div>
+<div class="banner-grid">
+    <div class="banner-container" data-image-url="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png">
+        <div class="banner-image"></div>
+        <div class="banner-tooltip">
+            <p>Copy the code to join us.</p>
+            <textarea class="source-code-textarea" rows="3" readonly></textarea>
+            <button class="copy-source-button">Copy Source</button>
+        </div>
+    </div>
 
-    <div class="banner-tooltip">
-        <p>Copy the code to join us.</p>
-        <textarea id="source-code" rows="3" readonly></textarea>
-        <button id="copy-button">Copy Source</button>
+    <div class="banner-container" data-image-url="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard02.png">
+        <div class="banner-image" style="background-image: url('https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard02.png');"></div>
+        <div class="banner-tooltip">
+            <p>Copy the code to join us.</p>
+            <textarea class="source-code-textarea" rows="3" readonly></textarea>
+            <button class="copy-source-button">Copy Source</button>
+        </div>
+    </div>
+    
+    <div class="banner-container">
+        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+    </div>
+    <div class="banner-container">
+        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+    </div>
+    <div class="banner-container">
+        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
     </div>
 </div>
-                    
-                    <div class="banner-container">
-                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
-                    </div>
-                    
-                    <div class="banner-container">
-                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
-                    </div>
-                    
-                    <div class="banner-container">
-                        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
-                    </div>
-                </div>
-            </div>
 
             <!-- 도트 캐릭터 GIF -->
             <div class="walking-chars">
@@ -1307,37 +1303,53 @@
             });
         }
 
-        // 배너 소스 코드 복사 기능
-        const copyButton = document.getElementById('copy-button');
-        const sourceCodeTextarea = document.getElementById('source-code');
-        
-        const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
-        sourceCodeTextarea.value = sourceCode;
+// 배너 소스 코드 복사 기능
+        document.querySelectorAll('.banner-container').forEach(container => {
+            const imageUrl = container.dataset.imageUrl;
+            // data-image-url 속성이 있는 배너에만 복사 기능을 추가합니다.
+            if (!imageUrl) return;
 
-        copyButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(sourceCode).then(() => {
-                copyButton.textContent = 'Copied!';
-                copyButton.classList.add('copied');
-                setTimeout(() => {
-                    copyButton.textContent = 'Copy Source';
-                    copyButton.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('클립보드 복사 실패:', err);
-                sourceCodeTextarea.select();
-                sourceCodeTextarea.setSelectionRange(0, 99999);
-                try {
-                    document.execCommand('copy');
-                    copyButton.textContent = 'Copied!';
-                    copyButton.classList.add('copied');
-                    setTimeout(() => {
-                        copyButton.textContent = 'Copy Source';
-                        copyButton.classList.remove('copied');
-                    }, 2000);
-                } catch (execErr) {
-                    alert('복사에 실패했습니다. 직접 복사해주세요.');
-                }
-            });
+            const sourceCodeTextarea = container.querySelector('.source-code-textarea');
+            const copyButton = container.querySelector('.copy-source-button');
+            const allianceUrl = "https://tomato92-om.github.io/TomaBardLove/TomaBard/"; // 동맹 사이트 주소
+
+            // 생성할 소스 코드를 정의합니다.
+            const sourceCode = `<a href="${allianceUrl}" target="_blank"><img src="${imageUrl}" alt="Toma x Bardock Alliance" border="0"></a>`;
+            
+            // 텍스트 영역에 소스 코드를 미리 채워넣습니다.
+            if (sourceCodeTextarea) {
+                sourceCodeTextarea.value = sourceCode;
+            }
+
+            // 복사 버튼에 클릭 이벤트를 추가합니다.
+            if (copyButton) {
+                copyButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(sourceCode).then(() => {
+                        copyButton.textContent = 'Copied!';
+                        copyButton.classList.add('copied');
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy Source';
+                            copyButton.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('클립보드 복사 실패:', err);
+                        // 대체 복사 방법
+                        sourceCodeTextarea.select();
+                        sourceCodeTextarea.setSelectionRange(0, 99999);
+                        try {
+                            document.execCommand('copy');
+                            copyButton.textContent = 'Copied!';
+                            copyButton.classList.add('copied');
+                            setTimeout(() => {
+                                copyButton.textContent = 'Copy Source';
+                                copyButton.classList.remove('copied');
+                            }, 2000);
+                        } catch (execErr) {
+                            alert('복사에 실패했습니다. 직접 복사해주세요.');
+                        }
+                    });
+                });
+            }
         });
         
         // 마지막 업데이트 날짜 설정
