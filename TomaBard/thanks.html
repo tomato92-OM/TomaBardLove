@@ -287,18 +287,18 @@
         }
 
         // 하트 애니메이션 생성
-        function createHeart() {
-            const hearts = ['🍅', '🩸', '🍅', '', '🩸', '🍅'];
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.style.left = Math.random() * 100 + '%';
-            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-            document.getElementById('hearts').appendChild(heart);
-            
-            setTimeout(() => {
-                heart.remove();
-            }, 4000);
-        }
+function createHeart() {
+    const hearts = ['🍅', '🩸', '🍅', '🩸', '🍅', '🩸'];
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.style.left = Math.random() * 100 + '%';
+    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    document.getElementById('hearts').appendChild(heart);
+    
+    setTimeout(() => {
+        heart.remove();
+    }, 4000);
+}
 
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', () => {
