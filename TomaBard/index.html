@@ -875,15 +875,37 @@
             <!-- 배너 섹션 -->
             <div class="banner-section">
                 <h3>バナー</h3>
-                <div class="banner-grid">
-                    <div class="banner-container">
-                        <div class="banner-image"></div>
-                        <div class="banner-tooltip">
-                            <p>Copy the code to join us.</p>
-                            <textarea id="source-code" rows="3" readonly></textarea>
-                            <button id="copy-button">Copy Source</button>
-                        </div>
-                    </div>
+<div class="banner-grid">
+    <div class="banner-container">
+        <div class="banner-image" style="background-image: url('https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png');" data-image-url="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png"></div>
+        <div class="banner-tooltip">
+            <p>Copy the code to join us.</p>
+            <textarea class="source-code-area" rows="3" readonly></textarea>
+            <button class="copy-source-button">Copy Source</button>
+        </div>
+    </div>
+    
+    <div class="banner-container">
+        <div class="banner-image" style="background-image: url('https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard02.png');" data-image-url="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard02.png"></div>
+        <div class="banner-tooltip">
+            <p>Copy the code to join us.</p>
+            <textarea class="source-code-area" rows="3" readonly></textarea>
+            <button class="copy-source-button">Copy Source</button>
+        </div>
+    </div>
+    
+    <div class="banner-container">
+        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+    </div>
+    
+    <div class="banner-container">
+        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+    </div>
+    
+    <div class="banner-container">
+        <div class="banner-image empty-banner">準備中<br>Coming Soon</div>
+    </div>
+</div>
                     
 <div class="banner-container">
     <div class="banner-image" style="background-image: url('https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard02.png');"></div>
@@ -1308,36 +1330,45 @@
         }
 
         // 배너 소스 코드 복사 기능
-        const copyButton = document.getElementById('copy-button');
-        const sourceCodeTextarea = document.getElementById('source-code');
-        
-        const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove" target="_blank"><img src="https://raw.githubusercontent.com/tomato92-OM/TomaBardLove/refs/heads/main/tomabard01.png" alt="Toma x Bardock Alliance" border="0"></a>`;
-        sourceCodeTextarea.value = sourceCode;
+// 배너 소스 코드 복사 기능 (모든 배너에서 작동하도록 개선)
+        document.querySelectorAll('.banner-container').forEach(container => {
+            const bannerImageDiv = container.querySelector('.banner-image');
+            const copyButton = container.querySelector('.copy-source-button');
+            const sourceCodeTextarea = container.querySelector('.source-code-area');
 
-        copyButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(sourceCode).then(() => {
-                copyButton.textContent = 'Copied!';
-                copyButton.classList.add('copied');
-                setTimeout(() => {
-                    copyButton.textContent = 'Copy Source';
-                    copyButton.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('클립보드 복사 실패:', err);
-                sourceCodeTextarea.select();
-                sourceCodeTextarea.setSelectionRange(0, 99999);
-                try {
-                    document.execCommand('copy');
-                    copyButton.textContent = 'Copied!';
-                    copyButton.classList.add('copied');
-                    setTimeout(() => {
-                        copyButton.textContent = 'Copy Source';
-                        copyButton.classList.remove('copied');
-                    }, 2000);
-                } catch (execErr) {
-                    alert('복사에 실패했습니다. 직접 복사해주세요.');
-                }
-            });
+            // 툴팁이 있는 배너에만 기능을 추가합니다.
+            if (copyButton && sourceCodeTextarea && bannerImageDiv.hasAttribute('data-image-url')) {
+                const imageUrl = bannerImageDiv.getAttribute('data-image-url');
+                const sourceCode = `<a href="https://tomato92-om.github.io/TomaBardLove/TomaBard/" target="_blank"><img src="${imageUrl}" alt="Toma x Bardock Alliance" border="0"></a>`;
+                sourceCodeTextarea.value = sourceCode;
+
+                copyButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(sourceCode).then(() => {
+                        copyButton.textContent = 'Copied!';
+                        copyButton.classList.add('copied');
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy Source';
+                            copyButton.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('클립보드 복사 실패:', err);
+                        // 대체 복사 방법
+                        sourceCodeTextarea.select();
+                        sourceCodeTextarea.setSelectionRange(0, 99999);
+                        try {
+                            document.execCommand('copy');
+                            copyButton.textContent = 'Copied!';
+                            copyButton.classList.add('copied');
+                            setTimeout(() => {
+                                copyButton.textContent = 'Copy Source';
+                                copyButton.classList.remove('copied');
+                            }, 2000);
+                        } catch (execErr) {
+                            alert('복사에 실패했습니다. 직접 복사해주세요.');
+                        }
+                    });
+                });
+            }
         });
         
         // 마지막 업데이트 날짜 설정
